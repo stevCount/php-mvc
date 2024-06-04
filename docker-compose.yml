@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  app:
+    container_name: php-mvc
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - 8000:80  
+    depends_on:
+      - db-phpmvc
+      
+  db-phpmvc:
+    image: postgres:13
+    ## nombre contenedor para base de datos
+    container_name: php-postgres-db
+    restart: always
+    ## habilitar puerto 6543 para conexiones externas opcional 5432:5432 o se puede dejar sin opcion puertos(ports)
+    ports:
+      - 6543:5432
+    environment:
+      POSTGRES_DB: php-mvc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/
+      # opcional agregar archivo para scripts en bd, permisos y demas.
+      - ./docker-compose/postgresql/db.sql:/docker-entrypoint-initdb.d/db.sql
+volumes:
+  db_data:
